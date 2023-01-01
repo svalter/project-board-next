@@ -15,10 +15,6 @@ export default function Home() {
             <span>100% Gratuita </span> e online
           </p>
         </section>
-
-        <section className={styles.donaters}>
-          <img src='https://sujeitoprogramador.com/steve.png' alt="Usuário 1" />          
-        </section>
       </main>
     </>
   )
