@@ -3,18 +3,56 @@ import { FiPlus, FiCalendar, FiEdit2, FiTrash } from 'react-icons/fi';
 import { GetServerSideProps } from 'next';
 import styles from './styles.module.scss';
 import { getSession } from 'next-auth/react';
+import { useState, FormEvent } from 'react';
+import firebase from '../../services/firebaseConnection'
 
-export default function Board() {
+interface BoardProps {
+    user: {
+        id: string;
+        nome: string;
+    }
+}
+
+export default function Board({ user }: BoardProps) {
+
+    const [input, setInput] = useState('');
+
+    async function handleAddTask(e: FormEvent) {
+        e.preventDefault();
+
+        if (input === '') {
+            alert('Preencha alguma tarefa!')
+            return
+        }
+
+        await firebase.firestore().collection('tarefas')
+            .add({
+                created: new Date(),
+                tarefa: input,
+                userId: user.id,
+                name: user.nome
+            })
+            .then((doc) => {
+                console.log('Cadastrado com sucesso', doc)
+            })
+            .catch((err) => {
+                console.log('erro ao cadastrar: ', err)
+            })
+    }
+
     return (
         <>
             <Head>
                 <title> Minhas tarefas - Board</title>
             </Head>
             <main className={styles.container}>
-                <form>
+                <form onSubmit={handleAddTask}>
                     <input
                         type="text"
-                        placeholder="Digite sua tarefa..." />
+                        placeholder="Digite sua tarefa..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                    />
                     <button type="submit">
                         <FiPlus size={25} color={"17181f"} />
                     </button>
@@ -59,9 +97,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         }
     }
 
+    const user = {
+        nome: session?.user.name,
+        id: session?.id,
+    }
+
     return {
         props: {
-
+            user
         }
     }
 }
