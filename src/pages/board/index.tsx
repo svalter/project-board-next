@@ -2,7 +2,7 @@ import Head from 'next/head';
 import styles from './styles.module.scss';
 import firebase from '../../services/firebaseConnection';
 import Link from 'next/link';
-import { FiPlus, FiCalendar, FiEdit2, FiTrash } from 'react-icons/fi';
+import { FiPlus, FiCalendar, FiEdit2, FiTrash, FiX } from 'react-icons/fi';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { useState, FormEvent } from 'react';
@@ -30,6 +30,7 @@ export default function Board({ user, data }: BoardProps) {
 
     const [input, setInput] = useState('');
     const [taskList, setTaskList] = useState<TaskList[]>(JSON.parse(data));
+    const [taskUpdate, setTaskUpdate] = useState<TaskList | null>();
 
     async function handleAddTask(e: FormEvent) {
         e.preventDefault();
@@ -37,6 +38,26 @@ export default function Board({ user, data }: BoardProps) {
         if (input === '') {
             alert('Preencha alguma tarefa!')
             return
+        }
+
+        if(taskUpdate) {
+            await firebase.firestore()
+            .collection('tarefas')
+            .doc(taskUpdate.id)
+            .update({
+                tarefa: input
+            })
+            .then(() => {
+                let data = taskList;
+                let taskIndex = taskList.findIndex(item => item.id === taskUpdate.id)
+                data[taskIndex].tarefa = input;
+
+                setTaskList(data);
+                setTaskUpdate(null);
+                setInput('');
+            })
+
+            return;
         }
 
         await firebase.firestore().collection('tarefas')
@@ -80,6 +101,16 @@ export default function Board({ user, data }: BoardProps) {
             });
     }
 
+    function handleUpdateTask(task: TaskList) {
+        setTaskUpdate(task)
+        setInput(task.tarefa);
+    }
+
+    function handleCancelUpdate () {
+        setInput('');
+        setTaskUpdate(null);
+    }
+    
     return (
         <>
             <Head>
@@ -93,10 +124,26 @@ export default function Board({ user, data }: BoardProps) {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                     />
-                    <button type="submit">
-                        <FiPlus size={25} color={"17181f"} />
-                    </button>
+                    {taskUpdate ? (
+                        <button type="submit" className={styles.buttonUpdate}>
+                            <FiEdit2 size={20} color="#FFFFFF" />
+                        </button>
+                    ): (
+                        <button type="submit">
+                            <FiPlus size={25} color={"#FFFFFF"} />
+                        </button>
+                    )
+                    }
                 </form>
+                {taskUpdate && (
+                    <span className={styles.warnText}>
+                        <button onClick={ handleCancelUpdate }>
+                            <FiX size={18} color="#FF3636"/>
+                        </button>
+                        Você está editando uma tarefa!
+                    </span>
+                )
+                }
                 <h1> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h1>
                 <section>
                     {taskList.map(task => (
@@ -111,7 +158,7 @@ export default function Board({ user, data }: BoardProps) {
                                         <FiCalendar size={20} color="#FFB800" />
                                         <time>{task.createdFormated}</time>
                                     </div>
-                                    <button>
+                                    <button onClick={() => handleUpdateTask(task)}>
                                         <FiEdit2 size={20} color="#FFFFFF" />
                                         <span>Editar</span>
                                     </button>
