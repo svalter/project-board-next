@@ -1,10 +1,12 @@
 import Head from 'next/head';
+import styles from './styles.module.scss';
+import firebase from '../../services/firebaseConnection';
+import Link from 'next/link';
 import { FiPlus, FiCalendar, FiEdit2, FiTrash } from 'react-icons/fi';
 import { GetServerSideProps } from 'next';
-import styles from './styles.module.scss';
 import { getSession } from 'next-auth/react';
 import { useState, FormEvent } from 'react';
-import firebase from '../../services/firebaseConnection'
+import { format } from 'date-fns';
 
 interface BoardProps {
     user: {
@@ -16,6 +18,7 @@ interface BoardProps {
 export default function Board({ user }: BoardProps) {
 
     const [input, setInput] = useState('');
+    const [taskList, setTaskList] = useState([]);
 
     async function handleAddTask(e: FormEvent) {
         e.preventDefault();
@@ -33,7 +36,16 @@ export default function Board({ user }: BoardProps) {
                 name: user.nome
             })
             .then((doc) => {
-                console.log('Cadastrado com sucesso', doc)
+                let data = {
+                    id: doc.id,
+                    created: new Date(),
+                    createdFormated: format(new Date(), 'dd MMMM yyyy'),
+                    tarefa: input,
+                    nome: user.nome
+                }
+
+                setTaskList([...taskList, data]);
+                setInput('');
             })
             .catch((err) => {
                 console.log('erro ao cadastrar: ', err)
@@ -59,25 +71,30 @@ export default function Board({ user }: BoardProps) {
                 </form>
                 <h1> Voce tem 2 tarefas!</h1>
                 <section>
-                    <article className={styles.taskList}>
-                        <p>Texto</p>
-                        <div className={styles.actions}>
-                            <div>
+                    {taskList.map(task => (
+                        <article className={styles.taskList} key={task.id}>
+                            <Link href={`/board/${task.id}`}>
+                                <p>{task.tarefa}</p>
+                            </Link>
+
+                            <div className={styles.actions}>
                                 <div>
-                                    <FiCalendar size={20} color="#FFB800" />
-                                    <time>17 de Julho 2021</time>
+                                    <div>
+                                        <FiCalendar size={20} color="#FFB800" />
+                                        <time>{task.createdFormated}</time>
+                                    </div>
+                                    <button>
+                                        <FiEdit2 size={20} color="#FFFFFF" />
+                                        <span>Editar</span>
+                                    </button>
                                 </div>
                                 <button>
-                                    <FiEdit2 size={20} color="#FFFFFF" />
-                                    <span>Editar</span>
+                                    <FiTrash size={20} color="#FF3636" />
+                                    <span>Excluir</span>
                                 </button>
                             </div>
-                            <button>
-                                <FiTrash size={20} color="#FF3636" />
-                                <span>Excluir</span>
-                            </button>
-                        </div>
-                    </article>
+                        </article>
+                    ))}
                 </section>
             </main>
         </>
