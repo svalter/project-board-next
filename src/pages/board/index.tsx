@@ -63,6 +63,23 @@ export default function Board({ user, data }: BoardProps) {
             })
     }
 
+    async function handleDelete(id: string) {
+        await firebase.firestore()
+            .collection('tarefas')
+            .doc(id)
+            .delete()
+            .then(() => {
+                console.log('Tarefa deletada com sucesso');
+                let taskDeleted = taskList.filter(item => {
+                    return (item.id !== id)
+                })
+                setTaskList(taskDeleted);
+            })
+            .catch((err) => {
+                console.log('Erro ao deletar', err);
+            });
+    }
+
     return (
         <>
             <Head>
@@ -80,12 +97,7 @@ export default function Board({ user, data }: BoardProps) {
                         <FiPlus size={25} color={"17181f"} />
                     </button>
                 </form>
-                {taskList ? (
-                    <h1> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h1>
-                ) :
-                    <h1> Você não possui tarefas </h1>
-                }
-
+                <h1> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h1>
                 <section>
                     {taskList.map(task => (
                         <article className={styles.taskList} key={task.id}>
@@ -104,7 +116,7 @@ export default function Board({ user, data }: BoardProps) {
                                         <span>Editar</span>
                                     </button>
                                 </div>
-                                <button>
+                                <button onClick={() => handleDelete(task.id)}>
                                     <FiTrash size={20} color="#FF3636" />
                                     <span>Excluir</span>
                                 </button>
@@ -136,11 +148,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         .orderBy('created', 'asc')
         .get();
 
-    const data = JSON.stringify(tasks.docs.map(info => {
+    const data = JSON.stringify(tasks.docs.map(item => {
         return {
-            id: info.id,
-            createdFormated: format(info.data().created.toDate(), 'dd MMMM yyyy'),
-            ...info.data()
+            id: item.id,
+            createdFormated: format(item.data().created.toDate(), 'dd MMMM yyyy'),
+            ...item.data()
         }
     }))
 
