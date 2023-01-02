@@ -8,17 +8,28 @@ import { getSession } from 'next-auth/react';
 import { useState, FormEvent } from 'react';
 import { format } from 'date-fns';
 
+type TaskList = {
+    id: string;
+    created: string | Date;
+    createdFormated?: string;
+    tarefa: string;
+    userId: string;
+    nome: string;
+
+}
+
 interface BoardProps {
     user: {
         id: string;
         nome: string;
     }
+    data: string;
 }
 
-export default function Board({ user }: BoardProps) {
+export default function Board({ user, data }: BoardProps) {
 
     const [input, setInput] = useState('');
-    const [taskList, setTaskList] = useState([]);
+    const [taskList, setTaskList] = useState<TaskList[]>(JSON.parse(data));
 
     async function handleAddTask(e: FormEvent) {
         e.preventDefault();
@@ -69,7 +80,12 @@ export default function Board({ user }: BoardProps) {
                         <FiPlus size={25} color={"17181f"} />
                     </button>
                 </form>
-                <h1> Voce tem 2 tarefas!</h1>
+                {taskList ? (
+                    <h1> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h1>
+                ) :
+                    <h1> Você não possui tarefas </h1>
+                }
+
                 <section>
                     {taskList.map(task => (
                         <article className={styles.taskList} key={task.id}>
@@ -114,6 +130,20 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         }
     }
 
+    const tasks = await firebase.firestore()
+        .collection('tarefas')
+        .where('userId', '==', session?.id)
+        .orderBy('created', 'asc')
+        .get();
+
+    const data = JSON.stringify(tasks.docs.map(info => {
+        return {
+            id: info.id,
+            createdFormated: format(info.data().created.toDate(), 'dd MMMM yyyy'),
+            ...info.data()
+        }
+    }))
+
     const user = {
         nome: session?.user.name,
         id: session?.id,
@@ -121,7 +151,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
     return {
         props: {
-            user
+            user,
+            data
         }
     }
 }
