@@ -24,7 +24,7 @@ export default NextAuth({
       } catch {
         return {
           ...session,
-          id: null
+          id: null,
         }
       }
     },

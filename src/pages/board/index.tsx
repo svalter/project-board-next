@@ -2,6 +2,7 @@ import Head from 'next/head';
 import styles from './styles.module.scss';
 import firebase from '../../services/firebaseConnection';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 import { FiPlus, FiCalendar, FiEdit2, FiTrash, FiX } from 'react-icons/fi';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
@@ -55,6 +56,7 @@ export default function Board({ user, data }: BoardProps) {
                 setTaskList(data);
                 setTaskUpdate(null);
                 setInput('');
+                toast.info("Tarefa editada");
             })
 
             return;
@@ -78,9 +80,10 @@ export default function Board({ user, data }: BoardProps) {
 
                 setTaskList([...taskList, data]);
                 setInput('');
+                toast.success("Nova tarefa cadastrada");
             })
             .catch((err) => {
-                console.log('erro ao cadastrar: ', err)
+                toast.error("Erro ao cadastrar nova tarefa");
             })
     }
 
@@ -95,9 +98,10 @@ export default function Board({ user, data }: BoardProps) {
                     return (item.id !== id)
                 })
                 setTaskList(taskDeleted);
+                toast.info("Tarefa deletada");
             })
             .catch((err) => {
-                console.log('Erro ao deletar', err);
+                toast.error("Erro ao deletar tarefa");
             });
     }
 
@@ -144,7 +148,7 @@ export default function Board({ user, data }: BoardProps) {
                     </span>
                 )
                 }
-                <h1> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h1>
+                <h3> Você tem {taskList.length} {taskList.length == 1 ? 'Tarefa' : 'Tarefas'}!</h3>
                 <section>
                     {taskList.map(task => (
                         <article className={styles.taskList} key={task.id}>

@@ -1,5 +1,7 @@
-import Head from "next/head";
 import styles from '../styles/styles.module.scss';
+import Head from "next/head";
+import Image from 'next/image';
+import imgTool from '../../public/images/board-user.svg';
 
 export default function Home() {
   return (
@@ -8,7 +10,7 @@ export default function Home() {
         <title>Board - Gerenciando suas tarefas</title>
       </Head>
       <main className={styles.contentContainer}>
-        <img src="/images/board-user.svg" alt="Ferramenta board"/>
+        <Image src={imgTool} alt="Ferramenta board" priority/>
         <section className={styles.callToAction}>
           <h1>Uma excelente ferramenta para gerenciar seu dia a dia Escreva, planeje e organize-se ...</h1>
           <p>
