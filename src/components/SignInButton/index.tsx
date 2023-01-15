@@ -12,11 +12,12 @@ export function SignInButton() {
         <button
             type="button"
             className={styles.singInButton}
-            onClick={() => signOut()}
         >
-            <Image src={session.user.image} alt="Foto do Usuário"  width={35} height={35}/>
-            Olá {session.user.name}
-            <FiLogOut color="#737380" className={styles.closeIcon} />
+            <span className={styles.user}>
+                <Image src={session.user.image} alt="Foto do Usuário"  width={35} height={35}/>
+                Olá {session.user.name}
+            </span>
+            <FiLogOut color="#ededed" className={styles.closeIcon}   onClick={() => signOut()}/>
         </button>
     ) : (
         <button
@@ -25,7 +26,7 @@ export function SignInButton() {
             onClick={() => signIn('github')}
         >
             <FaGithub color="#FFB800" />
-            Entrar com github
+            Entrar com GitHub
         </button>
     )
 }

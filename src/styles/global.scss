@@ -9,6 +9,25 @@ body {
     background: #FFFFFF;
 }
 
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #6470ca #0c1139;
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #676767;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #c2c2c2;
+    border-radius: 20px;
+    border: 3px solid #676767;
+}
+
 body,
 input,
 textarea,
@@ -28,12 +47,12 @@ a {
 
 @media (max-width: 1080px) {
     html {
-        font-size: 93.75%; // Converter o tamanho da font px 15
+        font-size: 93.75%;
     }
 }
 
 @media (max-width: 720px) {
     html {
-        font-size: 87.5%; // Converter o tamanho da font px 14
+        font-size: 87.5%;
     }
 }

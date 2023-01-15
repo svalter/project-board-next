@@ -1,7 +1,5 @@
 .contentContainer {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 0.2rem;
+    padding: 0 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10,7 +8,7 @@
     img {
         margin-top: 2rem;
         height: auto;
-        width: auto;
+        width: 30%;
     }
 }
 
@@ -30,6 +28,7 @@
         font-size: 1rem;
         text-align: center;
         color: #121a29;
+        word-wrap: break-word;
 
         span {
             color: #04dd75;

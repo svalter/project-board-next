@@ -36,29 +36,28 @@ export default function Board({ user, data }: BoardProps) {
     async function handleAddTask(e: FormEvent) {
         e.preventDefault();
 
-        if (input === '') {
-            alert('Preencha alguma tarefa!')
+        if (input === '' || input === null || input === undefined) {
+            toast.error("Insira um texto");
             return
         }
 
-        if(taskUpdate) {
+        if (taskUpdate) {
             await firebase.firestore()
-            .collection('tarefas')
-            .doc(taskUpdate.id)
-            .update({
-                tarefa: input
-            })
-            .then(() => {
-                let data = taskList;
-                let taskIndex = taskList.findIndex(item => item.id === taskUpdate.id)
-                data[taskIndex].tarefa = input;
+                .collection('tarefas')
+                .doc(taskUpdate.id)
+                .update({
+                    tarefa: input
+                })
+                .then(() => {
+                    let data = taskList;
+                    let taskIndex = taskList.findIndex(item => item.id === taskUpdate.id)
+                    data[taskIndex].tarefa = input;
 
-                setTaskList(data);
-                setTaskUpdate(null);
-                setInput('');
-                toast.info("Tarefa editada");
-            })
-
+                    setTaskList(data);
+                    setTaskUpdate(null);
+                    setInput('');
+                    toast.info("Tarefa editada");
+                })
             return;
         }
 
@@ -93,11 +92,12 @@ export default function Board({ user, data }: BoardProps) {
             .doc(id)
             .delete()
             .then(() => {
-                console.log('Tarefa deletada com sucesso');
                 let taskDeleted = taskList.filter(item => {
                     return (item.id !== id)
                 })
                 setTaskList(taskDeleted);
+                setTaskUpdate(null);
+                setInput('');
                 toast.info("Tarefa deletada");
             })
             .catch((err) => {
@@ -110,11 +110,11 @@ export default function Board({ user, data }: BoardProps) {
         setInput(task.tarefa);
     }
 
-    function handleCancelUpdate () {
+    function handleCancelUpdate() {
         setInput('');
         setTaskUpdate(null);
     }
-    
+
     return (
         <>
             <Head>
@@ -132,7 +132,7 @@ export default function Board({ user, data }: BoardProps) {
                         <button type="submit" className={styles.buttonUpdate}>
                             <FiEdit2 size={20} color="#FFFFFF" />
                         </button>
-                    ): (
+                    ) : (
                         <button type="submit">
                             <FiPlus size={25} color={"#FFFFFF"} />
                         </button>
@@ -141,8 +141,8 @@ export default function Board({ user, data }: BoardProps) {
                 </form>
                 {taskUpdate && (
                     <span className={styles.warnText}>
-                        <button onClick={ handleCancelUpdate }>
-                            <FiX size={18} color="#FF3636"/>
+                        <button onClick={handleCancelUpdate}>
+                            <FiX size={18} color="#FF3636" />
                         </button>
                         Você está editando uma tarefa!
                     </span>
@@ -152,26 +152,25 @@ export default function Board({ user, data }: BoardProps) {
                 <section>
                     {taskList.map(task => (
                         <article className={styles.taskList} key={task.id}>
-                            <Link href={`/board/${task.id}`}>
-                                <p>{task.tarefa}</p>
-                            </Link>
-
                             <div className={styles.actions}>
                                 <div>
                                     <div>
-                                        <FiCalendar size={20} color="#FFB800" />
+                                        <FiCalendar size={16} color="#FFB800" />
                                         <time>{task.createdFormated}</time>
                                     </div>
+                                </div>
+                                <div>
                                     <button onClick={() => handleUpdateTask(task)}>
-                                        <FiEdit2 size={20} color="#FFFFFF" />
-                                        <span>Editar</span>
+                                        <FiEdit2 size={14} color="#ffffff" />
+                                    </button>
+                                    <button onClick={() => handleDelete(task.id)}>
+                                        <FiTrash size={14} color="#fadbdb" />
                                     </button>
                                 </div>
-                                <button onClick={() => handleDelete(task.id)}>
-                                    <FiTrash size={20} color="#FF3636" />
-                                    <span>Excluir</span>
-                                </button>
                             </div>
+                            <Link href={`/board/${task.id}`}>
+                                <p>DESCRIÇÃO: <br /><br /> {task.tarefa}</p>
+                            </Link>
                         </article>
                     ))}
                 </section>

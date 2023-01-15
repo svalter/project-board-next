@@ -7,13 +7,13 @@ import 'firebase/compat/auth';
 import 'firebase/compat/storage'
 
 let firebaseConfig = {
-    apiKey: "AIzaSyDmKNNwNPtnjDsX8nvOPOtPs1s4us_aSyA",
-    authDomain: "board-ce5a8.firebaseapp.com",
-    projectId: "board-ce5a8",
-    storageBucket: "board-ce5a8.appspot.com",
-    messagingSenderId: "155652956044",
-    appId: "1:155652956044:web:5cfcd208b47507a9c980a9",
-    measurementId: "G-TCPKCG9LEK"
+    apiKey: process.env.NEXT_APP_FIREBASE_APIKEY,
+    authDomain: process.env.NEXT_APP_FIREBASE_AUTHDOMAIN,
+    projectId: process.env.NEXT_APP_FIREBASE_PROJETCTID,
+    storageBucket: process.env.NEXT_APP_FIREBASE_STORAGEBUCKET,
+    messagingSenderId: process.env.NEXT_APP_FIREBASE_MESSAGINGSENDERID,
+    appId: process.env.NEXT_APP_FIREBASE_APPID,
+    measurementId: process.env.NEXT_APP_FIREBASE_MEASEREMENTID,
 };
 
 // Initialize Firebase

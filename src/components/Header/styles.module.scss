@@ -1,10 +1,10 @@
 .headerContainer {
-    height: 70pxrem;
-    background-color: #141a29;
+    height: 70px;
+    background: linear-gradient(90deg, #0F0C29 0%, #302B63 50%, #24243E 100%);
 }
 
 .headerContent {
-    max-width: 1120px;
+    padding: 0 30px;
     height: 70px;
     margin: 0 auto;
     display: flex;
@@ -15,19 +15,26 @@
     }
 
     nav {
-        margin-left: 5rem;
-        height: 5rem;
+        margin-left: 40px;
+        height: 100%;
+        display: flex;
+        align-items: center;
 
         a {
             display: inline-block;
             position: relative;
             padding: 0 0.5rem;
-            height: 5rem;
-            line-height: 5rem;
             color: #FFFFFF;
+            transition: 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
 
             &+a {
                 margin-left: 2rem;
+            }
+
+            &:hover {
+                border-bottom: 2px solid #3f3ccd;
+                cursor: pointer;
             }
         }
     }
